@@ -1,0 +1,40 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            name = "forge"
+            url = "http://files.minecraftforge.net/maven"
+        }
+    }
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
+    }
+}
+
+apply plugin: 'net.minecraftforge.gradle.forge'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+version = "1.0.0"
+
+def ENV = System.getenv()
+if (ENV.BUILD_NUMBER) {
+    version = version + "." + "${System.getenv().BUILD_NUMBER}"
+}
+
+minecraft {
+	version = "1.10.2-12.18.2.2121"
+    mappings = "stable_29"
+    replace "@MODVERSION@", project.version
+    runDir = "run"
+}
+
+group = 'StructureUtils'
+
+jar {
+	manifest {
+		attributes 'FMLCorePlugin': 'me.modmuss50.structureutils.SLoadingCore'
+		attributes 'FMLCorePluginContainsFMLMod': 'true'
+	}
+}
