@@ -25,7 +25,7 @@ public class StructureTransformer implements IClassTransformer {
 						if (node instanceof IntInsnNode) {
 							IntInsnNode intInsnNode = (IntInsnNode) node;
 							if (intInsnNode.operand == 32) {
-								if(intInsnNode.getPrevious() instanceof IntInsnNode){
+								if (intInsnNode.getPrevious() instanceof IntInsnNode) {
 									continue;
 								}
 								intInsnNode.setOpcode(Opcodes.SIPUSH);
@@ -48,7 +48,7 @@ public class StructureTransformer implements IClassTransformer {
 						if (node instanceof IntInsnNode) {
 							IntInsnNode intInsnNode = (IntInsnNode) node;
 							if (intInsnNode.operand == 32) {
-								if(intInsnNode.getPrevious() instanceof IntInsnNode || intInsnNode.getPrevious() instanceof VarInsnNode){
+								if (intInsnNode.getPrevious() instanceof IntInsnNode || intInsnNode.getPrevious() instanceof VarInsnNode) {
 									continue;
 								}
 								intInsnNode.setOpcode(Opcodes.SIPUSH);
@@ -60,39 +60,41 @@ public class StructureTransformer implements IClassTransformer {
 			}
 			return ASMUtils.writeClassToBytes(classNode);
 		}
-		if(transformedName.equals("net.minecraft.world.gen.structure.template.Template")){
+		if (transformedName.equals("net.minecraft.world.gen.structure.template.Template")) {
 			System.out.println("Found template");
 			ClassNode classNode = ASMUtils.readClassFromBytes(basicClass);
 			for (MethodNode methodNode : classNode.methods) {
-				if(methodNode.desc.equals("(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/world/gen/structure/template/ITemplateProcessor;Lnet/minecraft/world/gen/structure/template/PlacementSettings;I)V")){
+				if (methodNode.desc.equals("(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/world/gen/structure/template/ITemplateProcessor;Lnet/minecraft/world/gen/structure/template/PlacementSettings;I)V") || methodNode.desc.equals("(Laid;Lcm;Laxg;Laxf;I)V")) {
 					System.out.println("Found addBlocksToWorld");
 					InsnList insnList = methodNode.instructions;
 					int count = 0;
-
+					boolean obf = !name.equals(transformedName);
 					System.out.println("Found rotate");
 					VarInsnNode varInsnNode1 = new VarInsnNode(Opcodes.ALOAD, 1);
 					VarInsnNode varInsnNode10 = new VarInsnNode(Opcodes.ALOAD, 15);
 					VarInsnNode varInsnNode15 = new VarInsnNode(Opcodes.ALOAD, 10);
-					MethodInsnNode methodInsnNode1 = new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "net/minecraft/world/World", "setTileEntity", "(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/tileentity/TileEntity;)V", false);
+					MethodInsnNode methodInsnNode1 = new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
+						obf ? "net/minecraft/world/World" : "net/minecraft/world/World",
+						obf ? "func_175690_a" : "setTileEntity", obf ? "(Lcm;Laqk;)V" : "(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/tileentity/TileEntity;)V", false);
 					AbstractInsnNode targetNode = null;
 					for (AbstractInsnNode node : insnList.toArray()) {
-						if(node instanceof MethodInsnNode){
+						if (node instanceof MethodInsnNode) {
 							MethodInsnNode methodInsnNode = (MethodInsnNode) node;
-							if(methodInsnNode.getOpcode() == Opcodes.INVOKEVIRTUAL){
-								if(methodInsnNode.name.equals("getTileEntity")){
-									count ++;
-									if(count == 2){
+							if (methodInsnNode.getOpcode() == Opcodes.INVOKEVIRTUAL) {
+								if (methodInsnNode.name.equals("getTileEntity") || methodInsnNode.name.equals("func_175625_s")  || (methodInsnNode.name.equals("r") && methodInsnNode.desc.equals("(Lcm;)Laqk;"))) {
+									count++;
+									if (count == 2) {
 										methodInsnNode.setOpcode(Opcodes.INVOKESTATIC);
 										methodInsnNode.owner = "net/minecraft/tileentity/TileEntity";
-										methodInsnNode.name = "create";
-										methodInsnNode.desc = "(Lnet/minecraft/world/World;Lnet/minecraft/nbt/NBTTagCompound;)Lnet/minecraft/tileentity/TileEntity;";
+										methodInsnNode.name = obf ? "func_190200_a" : "create";
+										methodInsnNode.desc = obf ? "(Laid;Ldr;)Laqk;" : "(Lnet/minecraft/world/World;Lnet/minecraft/nbt/NBTTagCompound;)Lnet/minecraft/tileentity/TileEntity;";
 										VarInsnNode varInsnNode = (VarInsnNode) methodInsnNode.getPrevious();
-										varInsnNode.var --;
-										FieldInsnNode fieldInsnNode = new FieldInsnNode(Opcodes.GETFIELD,"net/minecraft/world/gen/structure/template/Template$BlockInfo", "tileentityData", "Lnet/minecraft/nbt/NBTTagCompound;");
+										varInsnNode.var--;
+										FieldInsnNode fieldInsnNode = new FieldInsnNode(Opcodes.GETFIELD, obf ? "axh$b" : "net/minecraft/world/gen/structure/template/Template$BlockInfo", obf ? "field_186244_c" : "tileentityData", obf ? "Ldr;" : "Lnet/minecraft/nbt/NBTTagCompound;");
 										insnList.insertBefore(methodInsnNode, fieldInsnNode);
 									}
 								}
-								if(methodInsnNode.name.equals("rotate")){
+								if (methodInsnNode.name.equals("rotate") || methodInsnNode.name.equals("func_189667_a") || (methodInsnNode.name.equals("a") && methodInsnNode.desc.equals("(Laos;)V"))) {
 									targetNode = methodInsnNode.getNext();
 								}
 							}
@@ -110,7 +112,7 @@ public class StructureTransformer implements IClassTransformer {
 		return basicClass;
 	}
 
-	public void test(){
+	public void test() {
 
 		Template.BlockInfo template$blockinfo1 = null;
 		BlockPos blockpos = null;
