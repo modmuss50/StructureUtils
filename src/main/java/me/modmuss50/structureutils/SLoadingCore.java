@@ -9,7 +9,7 @@ import java.util.Map;
  *
  * -Dfml.coreMods.load=me.modmuss50.structureutils.SLoadingCore
  */
-@IFMLLoadingPlugin.MCVersion("1.10.2")
+@IFMLLoadingPlugin.MCVersion("1.12.2")
 @IFMLLoadingPlugin.Name("StructureUtilsASM")
 public class SLoadingCore implements IFMLLoadingPlugin {
 	@Override
