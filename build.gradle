@@ -23,6 +23,16 @@ if (ENV.BUILD_NUMBER) {
     version = version + "." + "${System.getenv().BUILD_NUMBER}"
 }
 
+processResources {
+    rename '(.+_at.cfg)', 'META-INF/$1'
+}
+
+jar {
+    manifest {
+        attributes 'FMLAT': 'structure_utils_at.cfg'
+    }
+}
+
 minecraft {
 	version = "1.12.2-14.23.4.2705"
     mappings = "snapshot_20171003"
